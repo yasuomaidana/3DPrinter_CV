@@ -12,31 +12,70 @@ from printrun import gcoder
 #Load OpenCV library
 import cv2
 
+#Import miscelaneous libraries
+import numpy as np
 
+
+#####################
+###Printing code part
 #Made comunication with 3D printer
 p=printcore('/dev/ttyUSB0',115200) # or p.printcore('COM3',115200) on Windows
 #Split the code into a list
 gcode=[i.strip() for i in open('AA8_calicat.gcode')] # or pass in your own array of gcode lines instead of reading from a file
 #Transform the previous list into an object, this object has some properties to allow the printing process
 gcode = gcoder.LightGCode(gcode)
+########end of printing part
+###################
+
+#################
+###Video preparation code part
+# Create a VideoCapture object
+cap = cv2.VideoCapture(0)
+# Check if camera opened successfully
+if (cap.isOpened() == False): 
+  print("Unable to read camera feed")
+# Default resolutions of the frame are obtained.The default resolutions are system dependent
+# We convert the resolutions from float to integer
+frame_width = int(cap.get(3))
+frame_height = int(cap.get(4))
+# Define the codec and create VideoWriter object.The output is stored in 'outpy.avi' file
+out = cv2.VideoWriter('/media/pi/Yasuo/outpy.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+####en video preparation
+#############
+
+
+
 
 p.startprint(gcode) # this will start a print
 
-i=0;
+i=0
 while(p.printing):
     if i%100==0:
         p.send_now("M105")
         print(p.readline_buf)
     else:
         i+=1
-    
-    
+    #Read a frame, ret indicates if the capture was succesful
+    ret, frame = cap.read()
+    if ret == True: 
+        # Write the frame into the file 'output.avi'
+        out.write(frame)
+        # Display the resulting frame    
+        cv2.imshow('frame',frame)
+
+###########Stop recording
+# When everything done, release the video capture and video write objects
+cap.release()
+out.release()
+# Closes all the frames
+cv2.destroyAllWindows() 
+###########end stop recording
+
 #If you need to interact with the printer:
 p.send_now("M105") # this will send M105 immediately, ahead of the rest of the print
-print('No')
 
-p.pause() # use these to pause/resume the current print
-p.resume()
+#p.pause() # use these to pause/resume the current print
+#p.resume()
 p.disconnect() # this is how you disconnect from the printer once you are done. This will also stop running prints.
 
 
