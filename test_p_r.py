@@ -21,7 +21,7 @@ import numpy as np
 #Made comunication with 3D printer
 p=printcore('/dev/ttyUSB0',115200) # or p.printcore('COM3',115200) on Windows
 #Split the code into a list
-gcode=[i.strip() for i in open('AA8_calicat.gcode')] # or pass in your own array of gcode lines instead of reading from a file
+gcode=[i.strip() for i in open('/home/pi/Desktop/AA8_Holder 1.gcode')] # or pass in your own array of gcode lines instead of reading from a file
 #Transform the previous list into an object, this object has some properties to allow the printing process
 gcode = gcoder.LightGCode(gcode)
 ########end of printing part
@@ -49,20 +49,28 @@ out = cv2.VideoWriter('/media/pi/Yasuo/outpy.avi',cv2.VideoWriter_fourcc('M','J'
 p.startprint(gcode) # this will start a print
 
 i=0
-while(p.printing):
-    if i%100==0:
-        p.send_now("M105")
-        print(p.readline_buf)
-    else:
-        i+=1
+#while(p.printing):
+while(p.printing):   
     #Read a frame, ret indicates if the capture was succesful
     ret, frame = cap.read()
     if ret == True: 
         # Write the frame into the file 'output.avi'
         out.write(frame)
         # Display the resulting frame    
-        cv2.imshow('frame',frame)
-
+    if i%1000==0:
+        #If you send a lot of instructions you will stop the prining process
+        #p.send_now("M105")
+        progress = 100 * float(p.queueindex) / len(p.mainqueue)
+        print(progress)
+        #try:
+        #    a=p._readline()
+        #    
+        #except:
+        #    a=""
+        #print(a)
+        i=0
+    else:
+        i+=1
 ###########Stop recording
 # When everything done, release the video capture and video write objects
 cap.release()
@@ -72,7 +80,7 @@ cv2.destroyAllWindows()
 ###########end stop recording
 
 #If you need to interact with the printer:
-p.send_now("M105") # this will send M105 immediately, ahead of the rest of the print
+p.cancelprint() # this will send M105 immediately, ahead of the rest of the print
 
 #p.pause() # use these to pause/resume the current print
 #p.resume()
