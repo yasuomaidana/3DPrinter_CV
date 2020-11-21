@@ -20,6 +20,8 @@ import numpy as np
 ###Printing code part
 #Made comunication with 3D printer
 p=printcore('/dev/ttyUSB0',115200) # or p.printcore('COM3',115200) on Windows
+filename=input("Name of the gcode file (localed at Desktop) : ")
+filePath='/home/pi/Desktop/'+filename+'.gcode'
 #Split the code into a list
 gcode=[i.strip() for i in open('/home/pi/Desktop/AA8_Holder 1.gcode')] # or pass in your own array of gcode lines instead of reading from a file
 #Transform the previous list into an object, this object has some properties to allow the printing process
@@ -39,6 +41,7 @@ if (cap.isOpened() == False):
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 # Define the codec and create VideoWriter object.The output is stored in 'outpy.avi' file
+filePath='/media/pi/Yasuo/'+filename+'.avi'
 out = cv2.VideoWriter('/media/pi/Yasuo/outpy.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 ####en video preparation
 #############
