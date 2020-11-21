@@ -114,3 +114,4 @@ p.disconnect() # this is how you disconnect from the printer once you are done. 
 
 
 print("done")
+print("Lost frames :"+str(lost))
