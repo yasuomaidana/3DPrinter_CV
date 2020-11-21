@@ -49,13 +49,17 @@ out = cv2.VideoWriter('/media/pi/Yasuo/outpy.avi',cv2.VideoWriter_fourcc('M','J'
 p.startprint(gcode) # this will start a print
 
 i=0
+lost=0
 #while(p.printing):
 while(p.printing):   
     #Read a frame, ret indicates if the capture was succesful
     ret, frame = cap.read()
     if ret == True: 
-        # Write the frame into the file 'output.avi'
-        out.write(frame)
+        try :
+            # Write the frame into the file 'output.avi'
+            out.write(frame)
+        except:
+            lost+=1
         # Display the resulting frame    
     if i%1000==0:
         #If you send a lot of instructions you will stop the prining process
