@@ -28,3 +28,8 @@ def fileFromList(tFile,path=None):
     if path:
         return path+files_List[op]
     return files_List[op]
+def getNameFromPath(filePath):
+    name=os.path.basename(filePath)
+    f_name, f_ext = os.path.splitext(name)
+    return f_name, f_ext
+

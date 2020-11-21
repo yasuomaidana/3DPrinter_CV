@@ -60,8 +60,9 @@ frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
 
-folder='/media/pi/Yasuo/'
-filePath=createName(folder,filename,'.avi')
+filename,_=navFil.getNameFromPath(filename)
+filePath=navFil.createFilePath(filename,'.avi','/home/pi/Desktop/')
+
 # Define the codec and create VideoWriter object.The output is stored in 'outpy.avi' file
 out = cv2.VideoWriter(filePath,cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 ####en video preparation
