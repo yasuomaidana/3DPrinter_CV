@@ -39,7 +39,7 @@ p=printcore('/dev/ttyUSB0',115200) # or p.printcore('COM3',115200) on Windows
 filename=input("Name of the gcode file (localed at Desktop) : ")
 filePath='/home/pi/Desktop/'+filename+'.gcode'
 #Split the code into a list
-gcode=[i.strip() for i in open('/home/pi/Desktop/AA8_Holder 1.gcode')] # or pass in your own array of gcode lines instead of reading from a file
+gcode=[i.strip() for i in open(filePath)] # or pass in your own array of gcode lines instead of reading from a file
 #Transform the previous list into an object, this object has some properties to allow the printing process
 gcode = gcoder.LightGCode(gcode)
 ########end of printing part
@@ -106,7 +106,7 @@ cv2.destroyAllWindows()
 ###########end stop recording
 
 #If you need to interact with the printer:
-p.cancelprint() # this will send M105 immediately, ahead of the rest of the print
+#p.cancelprint() # this will send M105 immediately, ahead of the rest of the print
 
 #p.pause() # use these to pause/resume the current print
 #p.resume()
