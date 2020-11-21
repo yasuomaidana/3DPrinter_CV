@@ -16,6 +16,7 @@ import cv2
 import numpy as np
 import os.path
 from os import path
+import naviFiles as navFil
 
 ###########################
 #Checks if the name exists in the given path, 
@@ -36,10 +37,11 @@ def createName(DirectoryPath,filename,TypeFile):
 ###Printing code part
 #Made comunication with 3D printer
 p=printcore('/dev/ttyUSB0',115200) # or p.printcore('COM3',115200) on Windows
-filename=input("Name of the gcode file (localed at Desktop) : ")
-filePath='/home/pi/Desktop/'+filename+'.gcode'
+
+filename=navFil.fileFromList('.gcode','/home/pi/Desktop/')
+#filePath='/home/pi/Desktop/'+filename+'.gcode'
 #Split the code into a list
-gcode=[i.strip() for i in open(filePath)] # or pass in your own array of gcode lines instead of reading from a file
+gcode=[i.strip() for i in open(filename)] # or pass in your own array of gcode lines instead of reading from a file
 #Transform the previous list into an object, this object has some properties to allow the printing process
 gcode = gcoder.LightGCode(gcode)
 ########end of printing part
