@@ -14,7 +14,23 @@ import cv2
 
 #Import miscelaneous libraries
 import numpy as np
+import os.path
+from os import path
 
+###########################
+#Checks if the name exists in the given path, 
+def createName(DirectoryPath,filename,TypeFile):
+    if path.exists(DirectoryPath+filename+TypeFile):
+        i=2
+        while (path.exists(DirectoryPath+filename+'v'+str(i)+TypeFile)):
+            i+=1
+        return DirectoryPath+filename+'v'+str(i)+TypeFile
+    else:
+        return DirectoryPath+filename+TypeFile
+
+###########################
+###----FUNCTIONS END----###
+###########################
 
 #####################
 ###Printing code part
@@ -40,9 +56,12 @@ if (cap.isOpened() == False):
 # We convert the resolutions from float to integer
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
+
+
+folder='/media/pi/Yasuo/'
+filePath=createName(folder,filename,'.avi')
 # Define the codec and create VideoWriter object.The output is stored in 'outpy.avi' file
-filePath='/media/pi/Yasuo/'+filename+'.avi'
-out = cv2.VideoWriter('/media/pi/Yasuo/outpy.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
+out = cv2.VideoWriter(filePath,cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 ####en video preparation
 #############
 
