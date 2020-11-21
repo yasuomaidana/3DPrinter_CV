@@ -82,6 +82,7 @@ while(p.printing):
             out.write(frame)
         except:
             lost+=1
+            print(lost)
         # Display the resulting frame    
     if i%1000==0:
         #If you send a lot of instructions you will stop the prining process
@@ -102,7 +103,7 @@ while(p.printing):
 cap.release()
 out.release()
 # Closes all the frames
-cv2.destroyAllWindows() 
+#cv2.destroyAllWindows() 
 ###########end stop recording
 
 #If you need to interact with the printer:
