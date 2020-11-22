@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+##Miscelaneous
+import naviFiles as navFil
 #X:94.00 Y:-52.00 Z:159.00 E:0.00
 
 # function called by trackbar, sets the next frame to be read
@@ -13,8 +15,10 @@ def setSpeed(val):
     global playSpeed
     playSpeed = max(val,1)
 
+filname=navFil.fileFromList('.avi')
+
 # open video
-video = cv2.VideoCapture(r"C:\Users\yasuo\OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey\Clases\ProjectMecatronics\3DPrinter_CV\outpy.avi")
+video = cv2.VideoCapture(filname)
 # get total number of frames
 nr_of_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
 # create display window
