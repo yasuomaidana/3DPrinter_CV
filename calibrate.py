@@ -55,7 +55,9 @@ filter_ord=men2()
 # open video
 video = cv2.VideoCapture(filname)
 
-filters.creatFilterBarsWindow()
+filters.creatFilterBarsWindow("Masks options",filters.masks)
+filters.creatFilterBarsWindow("Filter Options",filters.filters)
+cv2.namedWindow("Filter Options", cv2.WINDOW_NORMAL)
 
 # get total number of frames
 nr_of_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -75,17 +77,26 @@ filters_names=[
     ]
 
 defaultOrd=[
-    "hsv","Mean","Gaus","Bil","Ero","Dil","Ope",
-    "Clos","Grad","Lap","SoX","SoY"]
-
+    "Mean","Gaus","Bil","Ero","Dil","Ope",
+    "Clos","Grad","Lap","SoX","SoY","hsv"]
+defaultOrd2=["hsv_mask","GrS","NotF","AndF","OrF","XORF"]
 def noLoad(frame,params):
     c=0
     for i in defaultOrd:
         if c==0:
             c+=1
-            modi=filters.ordProcess(i,frame,param)
+            modi=filters.ordProcess(i,frame,params)
         else:
-            modi=filters.ordProcess(i,modi,param)
+            modi=filters.ordProcess(i,modi,params)
+    return modi
+def noLoad2(frame,params,ori):
+    c=0
+    for i in defaultOrd2:
+        if c==0:
+            c+=1
+            modi=filters.ordProcess(i,frame,params)
+        else:
+            modi=filters.ordProcess(i,modi,params)
     return modi
 con=True
 ret, frame = video.read()
@@ -96,12 +107,13 @@ while 1:
     # show frame, break the loop if no frame is found
     if ret:
         cv2.imshow("Video", frame)
-        param=filters.readBars()
+        param=filters.readBars("Filter Options",filters.filters)
+        param2=filters.readBars("Masks options",filters.masks)
         if len(filter_ord)==0:
             modi=noLoad(frame,param)
+            modi=noLoad2(modi,param2,frame)
         else:
-            modi=frame
-            modi=filters.filfromConf(filter_ord,modi)
+            modi=filters.filfromConf(filter_ord,frame)
             modi=noLoad(modi,param)
         cv2.imshow("Processed", modi)
         
@@ -128,13 +140,16 @@ while 1:
                 eS=False
     # stop playback when q is pressed
     if key == ord('q'):
+        cv2.destroyAllWindows()
+        #cv2.destroyWindow("shown_img")
         sav=input("Do you want to save this configuration? \n Yes (1) No(0) :")
         if sav:
             pic,dat=navFil.incName()
             cv2.imwrite(pic,modi)
         
             navFil.saveData(dat,getUsed(param),filter_ord)
-        
+            print(param)
+            print(param2)
         #usedNames=navFil.getFilesbyType('.png','FilterOp')
         
         break
