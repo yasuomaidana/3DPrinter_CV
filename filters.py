@@ -249,3 +249,8 @@ def ordProcess(toWork,frame,param):
     else:
         sendParam=param[toWork]
     return processes[toWork](frame,sendParam)
+def filfromConf(confi,modi):
+    for step in confi:
+        for fil in confi[step]:
+                modi=ordProcess(fil,modi,confi[step])
+    return modi

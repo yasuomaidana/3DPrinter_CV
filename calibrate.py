@@ -44,11 +44,12 @@ def men2():
     r={}
     if int(l):
         stConf=navFil.fileFromList('.info','FilterOp/')
-        r["Conf_1"]=navFil.loadData(stConf)
+        r=navFil.loadData(stConf)
     return r
 ############################################################
 
 filname=navFil.fileFromList('.avi')
+
 filter_ord=men2()
 
 filters.creatFilterBarsWindow()
@@ -75,40 +76,60 @@ defaultOrd=[
     "hsv","Mean","Gaus","Bil","Ero","Dil","Ope",
     "Clos","Grad","Lap","SoX","SoY"]
 
-
+def noLoad(frame,params):
+    c=0
+    for i in defaultOrd:
+        if c==0:
+            c+=1
+            modi=filters.ordProcess(i,frame,param)
+        else:
+            modi=filters.ordProcess(i,modi,param)
+    return modi
+con=True
+ret, frame = video.read()
 while 1:
-    ret, frame = video.read()
     
+    if con:
+        ret, frame = video.read()
     # show frame, break the loop if no frame is found
     if ret:
         cv2.imshow("Video", frame)
         param=filters.readBars()
-        process_ord=filter_ord
         if len(filter_ord)==0:
-            process_ord=defaultOrd
-        c=0
-        for i in process_ord:
-            if c==0:
-                c+=1
-                modi=filters.ordProcess(i,frame,param)
-            else:
-                modi=filters.ordProcess(i,modi,param)
+            modi=noLoad(frame,param)
+        else:
+            modi=frame
+            modi=filters.filfromConf(filter_ord,modi)
+            modi=noLoad(modi,param)
         cv2.imshow("Processed", modi)
         
         # update slider position on trackbar
         # NOTE: this is an expensive operation, remove to greatly increase max playback speed
+        
         cv2.setTrackbarPos("Frame","Video", int(video.get(cv2.CAP_PROP_POS_FRAMES)))
     else:
         break
-
+    
     key = cv2.waitKey(playSpeed)
+    if key==ord('p'):
+        con=False
+    if key==ord('c'):
+        con=True
     if key == ord('s'):
-        n=navFil.getFilesbyType('.png')
+        pic,dat=navFil.incName()
+        cv2.imwrite(pic,modi)
+        filter_ord=navFil.saveData(dat,getUsed(param),filter_ord)
+        eS=True
+        while eS:
+            key = cv2.waitKey(playSpeed)
+            if key == ord('c'):
+                eS=False
     # stop playback when q is pressed
     if key == ord('q'):
         pic,dat=navFil.incName()
         cv2.imwrite(pic,modi)
-        navFil.saveData(dat,getUsed(param))
+        
+        navFil.saveData(dat,getUsed(param),filter_ord)
         
         #usedNames=navFil.getFilesbyType('.png','FilterOp')
         
