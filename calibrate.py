@@ -48,13 +48,15 @@ def men2():
     return r
 ############################################################
 
-filname=navFil.fileFromList('.avi')
+filname=navFil.fileFromList('.avi','TrainVideos/')
 
 filter_ord=men2()
 
-filters.creatFilterBarsWindow()
 # open video
 video = cv2.VideoCapture(filname)
+
+filters.creatFilterBarsWindow()
+
 # get total number of frames
 nr_of_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
 # create display window
