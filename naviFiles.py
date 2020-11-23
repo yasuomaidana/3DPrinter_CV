@@ -3,6 +3,7 @@ import os
 import os.path
 from os import path
 from os import getcwd
+import pickle
 
 DirectoryPath = os.getcwd()+'\\'
 
@@ -32,4 +33,21 @@ def getNameFromPath(filePath):
     name=os.path.basename(filePath)
     f_name, f_ext = os.path.splitext(name)
     return f_name, f_ext
+def saveData(name,data):
+    with open(name, 'wb') as handle:
+        pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+def loadData(name):
+    with open(name, 'rb') as handle:
+        return pickle.load(handle)
+def incName():
+    usedNames=getFilesbyType('.png','FilterOp')
+    maxN= -1
+    for i in usedNames:
+        onlyName,_=getNameFromPath(i)
+        if int(onlyName)>maxN:
+            maxN=int(onlyName)
+    maxN=str(maxN+1)
 
+    nameD=createFilePath(maxN,'.info',r'FilterOp/')
+    nameP=createFilePath(maxN,'.png',r'FilterOp/')
+    return nameP,nameD

@@ -16,10 +16,42 @@ def getFrame(frame_nr):
 def setSpeed(val):
     global playSpeed
     playSpeed = max(val,1)
+###############################################################
+############################################################
+def getUsed(params):
+    used={}
+    for par in params.keys():
+        if params[par]["on"]:
+            used[par]=params[par]
+    return used
+
+def men():
+    print("Filters used to color filtering")
+    for i in filters_names[0:2]:
+        print(i)
+    print("Filters used to smooth")
+    for i in filters_names[2:4]:
+        print(i)
+    print("Filters used to sharp")
+    for i in filters_names[4:9]:
+        print(i)
+    print("Filters used for morphological trans")
+    for i in filters_names[9:]:
+        print(i)
+
+def men2():
+    l=input("Do you want to start from previous configuration? \n(1) yes (0) no: ")
+    r={}
+    if int(l):
+        stConf=navFil.fileFromList('.info','FilterOp/')
+        r["Conf_1"]=navFil.loadData(stConf)
+    return r
+############################################################
 
 filname=navFil.fileFromList('.avi')
-filters.creatFilterBarsWindow()
+filter_ord=men2()
 
+filters.creatFilterBarsWindow()
 # open video
 video = cv2.VideoCapture(filname)
 # get total number of frames
@@ -32,11 +64,6 @@ playSpeed = 50
 cv2.createTrackbar("Frame", "Video", 0,nr_of_frames,getFrame)
 cv2.createTrackbar("Speed", "Video", playSpeed,100,setSpeed)
 
-############################################################
-
-
-
-
 filters_names=[
     "hsv","hsv_mask",
     "Mean","Gaus",
@@ -44,23 +71,11 @@ filters_names=[
     "Ero","Dil","Ope","Clos"
     ]
 
-print("Filters used to color filtering")
-for i in filters_names[0:2]:
-    print(i)
-print("Filters used to smooth")
-for i in filters_names[2:4]:
-    print(i)
-print("Filters used to sharp")
-for i in filters_names[4:9]:
-    print(i)
-print("Filters used for morphological trans")
-for i in filters_names[9:]:
-    print(i)
-
-filter_ord=[]
 defaultOrd=[
     "hsv","Mean","Gaus","Bil","Ero","Dil","Ope",
     "Clos","Grad","Lap","SoX","SoY"]
+
+
 while 1:
     ret, frame = video.read()
     
@@ -87,8 +102,14 @@ while 1:
         break
 
     key = cv2.waitKey(playSpeed)
-
+    if key == ord('s'):
+        n=navFil.getFilesbyType('.png')
     # stop playback when q is pressed
     if key == ord('q'):
-        print(filters.readBars())
+        pic,dat=navFil.incName()
+        cv2.imwrite(pic,modi)
+        navFil.saveData(dat,getUsed(param))
+        
+        #usedNames=navFil.getFilesbyType('.png','FilterOp')
+        
         break

@@ -1,2 +1,3 @@
 *.avi
 localTest.py
+__pycache__/
