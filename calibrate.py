@@ -126,10 +126,12 @@ while 1:
                 eS=False
     # stop playback when q is pressed
     if key == ord('q'):
-        pic,dat=navFil.incName()
-        cv2.imwrite(pic,modi)
+        sav=input("Do you want to save this configuration? \n Yes (1) No(0) :")
+        if sav:
+            pic,dat=navFil.incName()
+            cv2.imwrite(pic,modi)
         
-        navFil.saveData(dat,getUsed(param),filter_ord)
+            navFil.saveData(dat,getUsed(param),filter_ord)
         
         #usedNames=navFil.getFilesbyType('.png','FilterOp')
         
