@@ -37,8 +37,8 @@ filters={
     }
 
 
-wrOP={"Mask_Prev_Or":[0,1]}
-masks={"GrS":Gray_Scale,"hsv_mask":{},"NotF":{},"AndF":{},"OrF":{},"XORF":{},"Show":wrOP}
+#wrOP={"Mask_Prev_Or":[0,1]}
+masks={"GrS":Gray_Scale,"hsv_mask":{},"NotF":{},"AndF":{},"OrF":{},"XORF":{},"WrO":{}}
 def on_off(fOp):
     return "OFF_ON:"+fOp
 
@@ -242,7 +242,7 @@ def SobelY_filter(frame,param):
 # 'Or': {'on': 0}, 
 # 'XOR': {'on': 0}, 
 # 'Show': {'on': 1, 'Mask_Prev_Or': 0}}
-def HSV_Mask(frame,maskParam,param):
+def HSV_Mask(frame,maskParam,param,ori=None):
     param2=maskParam["hsv_mask"]
     if param2["on"]==0:
         return frame
@@ -252,7 +252,7 @@ def HSV_Mask(frame,maskParam,param):
         mask = cv2.inRange(hsv,l_C,u_C)
         return mask
 
-def GrayScale(frame,maskParam,param=None):
+def GrayScale(frame,maskParam,param=None,ori=None):
     param=maskParam["GrS"]
     if param["on"]==0:
         return frame
@@ -264,7 +264,7 @@ def GrayScale(frame,maskParam,param=None):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         _,mask = cv2.threshold(gray, param["L_Thres"], param["U_Thres"], Mode[param["Mode"]]) 
         return mask
-def notFilter(frame,maskParam,param=None):
+def notFilter(frame,maskParam,param=None,ori=None):
     param=maskParam["NotF"]
     if param["on"]==0:
         return frame
@@ -291,7 +291,7 @@ def andFilter(frame,maskParam,param=None,ori=None):
     else:
         s= selMask(maskParam)
         mask=genMask(s,frame,maskParam,param=None)
-        if maskParam["Mask_Prev_Or"]:
+        if maskParam["WrO"]:
             masked = cv2.bitwise_and(frame,mask)     
         else:
             masked = cv2.bitwise_and(ori,mask) 
@@ -303,7 +303,7 @@ def orFilter(frame,maskParam,param=None,ori=None):
     else:
         s= selMask(maskParam)
         mask=genMask(s,frame,maskParam,param=None)
-        if maskParam["Mask_Prev_Or"]:
+        if maskParam["WrO"]:
             masked = cv2.bitwise_or(frame,mask)     
         else:
             masked = cv2.bitwise_or(ori,mask) 
@@ -315,7 +315,7 @@ def xorFilter(frame,maskParam,param=None,ori=None):
     else:
         s= selMask(maskParam)
         mask=genMask(s,frame,maskParam,param=None)
-        if maskParam["Mask_Prev_Or"]:
+        if maskParam["WrO"]:
             masked = cv2.bitwise_or(frame,mask)     
         else:
             masked = cv2.bitwise_or(ori,mask) 
@@ -335,20 +335,20 @@ processes={
     "SoX":SobelX_filter,"SoY":SobelY_filter,
     "hsv_mask":HSV_Mask,"AndF":andFilter,
     "NotF":notFilter,"OrF":orFilter,"XORF":xorFilter}
-def ordProcess(toWork,frame,param,ori=None):
+def ordProcess(toWork,frame,param,ori=None,maskParam=None):
     #print(toWork)
     #print(param)
     if toWork in maskP:
-        sendParam=param[toWork]
+        #sendParam=param[toWork]
 
         #print("caso mascara")
-        return frame
+        return processes[toWork](frame,maskParam,param,ori)
     if toWork=="Show":
         return frame
     sendParam=param[toWork]
     return processes[toWork](frame,sendParam)
 def filfromConf(confi,modi):
-    ori=modi
+    ori=modi.copy()
     for step in confi:
         for fil in confi[step]:
                 modi=ordProcess(fil,modi,confi[step],ori)

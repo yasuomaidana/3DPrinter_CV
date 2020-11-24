@@ -25,6 +25,12 @@ def getUsed(params):
             used[par]=params[par]
     return used
 
+filters_names=[
+    "hsv","hsv_mask",
+    "Mean","Gaus",
+    "Bil","Grad","Lap","SoX","SoY",
+    "Ero","Dil","Ope","Clos"
+    ]
 def men():
     print("Filters used to color filtering")
     for i in filters_names[0:2]:
@@ -47,7 +53,7 @@ def men2():
         r=navFil.loadData(stConf)
     return r
 ############################################################
-
+men()
 filname=navFil.fileFromList('.avi','TrainVideos/')
 
 filter_ord=men2()
@@ -69,12 +75,7 @@ playSpeed = 50
 cv2.createTrackbar("Frame", "Video", 0,nr_of_frames,getFrame)
 cv2.createTrackbar("Speed", "Video", playSpeed,100,setSpeed)
 
-filters_names=[
-    "hsv","hsv_mask",
-    "Mean","Gaus",
-    "Bil","Grad","Lap","SoX","SoY",
-    "Ero","Dil","Ope","Clos"
-    ]
+
 
 defaultOrd=[
     "Mean","Gaus","Bil","Ero","Dil","Ope",
@@ -89,19 +90,21 @@ def noLoad(frame,params):
         else:
             modi=filters.ordProcess(i,modi,params)
     return modi
-def noLoad2(frame,params,ori):
+
+def noLoad2(frame,params,ori,maskParams):
     c=0
     for i in defaultOrd2:
         if c==0:
             c+=1
-            modi=filters.ordProcess(i,frame,params)
+            modi=filters.ordProcess(i,frame,params,ori,maskParams)
         else:
-            modi=filters.ordProcess(i,modi,params)
+            modi=filters.ordProcess(i,modi,params,ori,maskParams)
     return modi
+
 con=True
 ret, frame = video.read()
 while 1:
-    
+    ori=frame.copy()
     if con:
         ret, frame = video.read()
     # show frame, break the loop if no frame is found
@@ -111,10 +114,11 @@ while 1:
         param2=filters.readBars("Masks options",filters.masks)
         if len(filter_ord)==0:
             modi=noLoad(frame,param)
-            modi=noLoad2(modi,param2,frame)
+            modi=noLoad2(modi,param,ori,param2)
         else:
             modi=filters.filfromConf(filter_ord,frame)
             modi=noLoad(modi,param)
+            modi=noLoad2(modi,param,ori,param2)
         cv2.imshow("Processed", modi)
         
         # update slider position on trackbar
