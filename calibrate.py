@@ -159,7 +159,7 @@ while 1:
         cv2.imwrite(pic,modi)
         
         Mseq=comb(param,param2)
-        print(Mseq)
+        #print(Mseq)
         filter_ord=navFil.saveData(dat,getUsed(param),filter_ord,Mseq)
         eS=True
         while eS:
@@ -170,7 +170,8 @@ while 1:
     if key == ord('q'):
         #param2=prepSaV(param2)
         Mseq=comb(param,param2)
-        print(Mseq)
+        #
+        #print(Mseq)
         cv2.destroyAllWindows()
         #cv2.destroyWindow("shown_img")
         sav=int(input("Do you want to save this configuration? \n Yes (1) No(0) :"))
