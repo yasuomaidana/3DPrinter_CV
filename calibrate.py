@@ -95,9 +95,6 @@ def noLoad2(frame,params,ori,maskParams):
     for i in defaultOrd2:
         ind=defaultOrd2.index(i) 
         if(maskParams[i]["on"] and ind>2):
-            #print(maskParams[i])
-            #print("spec")
-            #print(maskParams[i])
             spec=True
             break
     if spec:
@@ -106,14 +103,31 @@ def noLoad2(frame,params,ori,maskParams):
         ind=0
         modi=frame
         for i in defaultOrd2:
-            #print("not spec")
-            #print(i)
             modi=filters.ordProcess(i,modi,param,ori,maskParams)
             if ind>2:
                 break
             ind+=1
     return modi
 
+def prepSaV(param2):
+    spec=False
+
+    for i in defaultOrd2:
+        ind=defaultOrd2.index(i) 
+        if(param2[i]["on"] and ind>2):
+            mask=param2[i]
+            spec=True
+            break
+    if spec:
+        for i in defaultOrd2:
+            if( not (param2[i]==mask)):
+                param2[i]["on"]=0
+    return param2
+
+def comb(param,param2):
+    for i in param2.keys():
+        param[i]=param2[i]
+    return param
 con=True
 ret, frame = video.read()
 while 1:
@@ -157,11 +171,14 @@ while 1:
                 eS=False
     # stop playback when q is pressed
     if key == ord('q'):
+        param2=prepSaV(param2)
+        param=comb(param,param2)
+        print(param)
         cv2.destroyAllWindows()
         #cv2.destroyWindow("shown_img")
         sav=int(input("Do you want to save this configuration? \n Yes (1) No(0) :"))
         if sav:
             pic,dat=navFil.incName()
             cv2.imwrite(pic,modi)
-            navFil.saveData(dat,getUsed(param),filter_ord)
+            print(navFil.saveData(dat,getUsed(param),filter_ord))
         break

@@ -402,12 +402,61 @@ def ordProcess(toWork,frame,param,ori=None,maskParam=None):
         return processes[toWork](frame,maskParam,param,ori)
     if toWork=="Show":
         return frame
+    
     sendParam=param[toWork]
+    
     return processes[toWork](frame,sendParam)
+
+defaultOrd=[
+    "Mean","Gaus","Bil","Ero","Dil","Ope",
+    "Clos","Grad","Lap","SoX","SoY","hsv"]
+defaultOrd2=["hsv_mask","GrS","NotF","AndF","OrF","XORF"]
+
+def emD():
+    GrS={"on":0}
+    hsv_mask={"on":0}
+    NotF={"on":0}
+    AndF={"on":0}
+    OrF={"on":0}
+    XORF={"on":0}
+    return {"hsv_mask":hsv_mask,"GrS":GrS,"NotF":NotF,"AndF":AndF,"OrF":OrF,"XORF":XORF}
+def ordProcessRead(allFilters):
+    param={}
+    param2=emD()
+    
+    for i in defaultOrd:
+        if i in allFilters.keys():
+            param[i]=allFilters[i]
+            #print(param[i])
+    for i in defaultOrd2:
+        if i in allFilters.keys():
+            param2[i]=allFilters[i]
+    
+    return param,param2
 
 def filfromConf(confi,modi):
     ori=modi.copy()
+    #print(confi)
     for step in confi:
-        for fil in confi[step]:
+        m=False
+        ma=maskG+maskP
+        fi=confi[step].keys()
+        for j in ma:
+            if j in fi:
+                m=True
+                break
+        if m:
+            param,param2=ordProcessRead(confi[step])
+            #print("here")
+            for fil in param.keys():
+                modi=ordProcess(fil,modi,param,ori)
+            #print("here2")
+            for fil2 in param2.keys():
+                print(fil2)
+                print(param2)
+                modi=ordProcess(fil2,modi,param,ori,param2)
+            #print("here3")
+        else:
+            for fil in confi[step]:
                 modi=ordProcess(fil,modi,confi[step],ori)
     return modi
