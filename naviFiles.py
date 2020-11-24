@@ -33,9 +33,11 @@ def getNameFromPath(filePath):
     name=os.path.basename(filePath)
     f_name, f_ext = os.path.splitext(name)
     return f_name, f_ext
-def saveData(name,data,filter_ord):
+def saveData(name,data,filter_ord,filter_mask=None):
     rn,_=getNameFromPath(name)
     filter_ord[rn]=data
+    if filter_mask:
+        filter_ord[rn+'m']=filter_mask
     with open(name, 'wb') as handle:
         pickle.dump(filter_ord, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return filter_ord

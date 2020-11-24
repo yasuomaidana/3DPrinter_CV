@@ -109,25 +109,19 @@ def noLoad2(frame,params,ori,maskParams):
             ind+=1
     return modi
 
-def prepSaV(param2):
-    spec=False
-
-    for i in defaultOrd2:
-        ind=defaultOrd2.index(i) 
-        if(param2[i]["on"] and ind>2):
-            mask=param2[i]
-            spec=True
-            break
-    if spec:
-        for i in defaultOrd2:
-            if( not (param2[i]==mask)):
-                param2[i]["on"]=0
-    return param2
 
 def comb(param,param2):
-    for i in param2.keys():
-        param[i]=param2[i]
-    return param
+    ma=False
+    for m in param2.keys():
+        if param2[m]['on']==1:
+            ma=True
+            break
+    if not ma:
+        return None
+    r={}
+    r['F']=param
+    r['M']=param2
+    return r
 con=True
 ret, frame = video.read()
 while 1:
@@ -163,7 +157,10 @@ while 1:
     if key == ord('s'):
         pic,dat=navFil.incName()
         cv2.imwrite(pic,modi)
-        filter_ord=navFil.saveData(dat,getUsed(param),filter_ord)
+        
+        Mseq=comb(param,param2)
+        print(Mseq)
+        filter_ord=navFil.saveData(dat,getUsed(param),filter_ord,Mseq)
         eS=True
         while eS:
             key = cv2.waitKey(playSpeed)
@@ -171,14 +168,14 @@ while 1:
                 eS=False
     # stop playback when q is pressed
     if key == ord('q'):
-        param2=prepSaV(param2)
-        param=comb(param,param2)
-        print(param)
+        #param2=prepSaV(param2)
+        Mseq=comb(param,param2)
+        print(Mseq)
         cv2.destroyAllWindows()
         #cv2.destroyWindow("shown_img")
         sav=int(input("Do you want to save this configuration? \n Yes (1) No(0) :"))
         if sav:
             pic,dat=navFil.incName()
             cv2.imwrite(pic,modi)
-            print(navFil.saveData(dat,getUsed(param),filter_ord))
+            filter_ord=navFil.saveData(dat,getUsed(param),filter_ord,Mseq)
         break
