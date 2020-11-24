@@ -80,7 +80,6 @@ cv2.createTrackbar("Speed", "Video", playSpeed,100,setSpeed)
 defaultOrd=[
     "Mean","Gaus","Bil","Ero","Dil","Ope",
     "Clos","Grad","Lap","SoX","SoY","hsv"]
-defaultOrd2=["hsv_mask","GrS","NotF","AndF","OrF","XORF"]
 def noLoad(frame,params):
     c=0
     for i in defaultOrd:
@@ -90,15 +89,29 @@ def noLoad(frame,params):
         else:
             modi=filters.ordProcess(i,modi,params)
     return modi
-
+defaultOrd2=["hsv_mask","GrS","NotF","AndF","OrF","XORF"]
 def noLoad2(frame,params,ori,maskParams):
-    c=0
+    spec=False
     for i in defaultOrd2:
-        if c==0:
-            c+=1
-            modi=filters.ordProcess(i,frame,params,ori,maskParams)
-        else:
-            modi=filters.ordProcess(i,modi,params,ori,maskParams)
+        ind=defaultOrd2.index(i) 
+        if(maskParams[i]["on"] and ind>2):
+            #print(maskParams[i])
+            #print("spec")
+            #print(maskParams[i])
+            spec=True
+            break
+    if spec:
+        return filters.ordProcess(defaultOrd2[ind],frame,param,ori,maskParams)
+    else:
+        ind=0
+        modi=frame
+        for i in defaultOrd2:
+            #print("not spec")
+            #print(i)
+            modi=filters.ordProcess(i,modi,param,ori,maskParams)
+            if ind>2:
+                break
+            ind+=1
     return modi
 
 con=True
@@ -146,14 +159,9 @@ while 1:
     if key == ord('q'):
         cv2.destroyAllWindows()
         #cv2.destroyWindow("shown_img")
-        sav=input("Do you want to save this configuration? \n Yes (1) No(0) :")
+        sav=int(input("Do you want to save this configuration? \n Yes (1) No(0) :"))
         if sav:
             pic,dat=navFil.incName()
             cv2.imwrite(pic,modi)
-        
             navFil.saveData(dat,getUsed(param),filter_ord)
-            print(param)
-            print(param2)
-        #usedNames=navFil.getFilesbyType('.png','FilterOp')
-        
         break
