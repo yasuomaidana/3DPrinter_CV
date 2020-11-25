@@ -73,7 +73,6 @@ while(p.printing):
             # Write the frame into the file 'output.avi'
             out.write(frame)
         except:
-            out.release()
             neName=baseName+str(part)
             part+=1
             filePath=navFil.createFilePath(neName,'.avi','/media/pi/Yasuo/')
