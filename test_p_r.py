@@ -19,17 +19,6 @@ from os import path
 import naviFiles as navFil
 
 ###########################
-#Checks if the name exists in the given path, 
-def createName(DirectoryPath,filename,TypeFile):
-    if path.exists(DirectoryPath+filename+TypeFile):
-        i=2
-        while (path.exists(DirectoryPath+filename+'v'+str(i)+TypeFile)):
-            i+=1
-        return DirectoryPath+filename+'v'+str(i)+TypeFile
-    else:
-        return DirectoryPath+filename+TypeFile
-
-###########################
 ###----FUNCTIONS END----###
 ###########################
 
@@ -62,19 +51,19 @@ frame_height = int(cap.get(4))
 
 filename,_=navFil.getNameFromPath(filename)
 filePath=navFil.createFilePath(filename,'.avi','/media/pi/Yasuo/')
+baseName=navFil.getNameFromPath(filePath)
 
-# Define the codec and create VideoWriter object.The output is stored in 'outpy.avi' file
-out = cv2.VideoWriter(filePath,cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
-####en video preparation
-#############
+###
 
 
 
-
+p.connect()
+p.send("G1 X99.00 Y219.00 Z165.00")
+p.send_now("G1 X99.00 Y219.00 Z165.00")
 p.startprint(gcode) # this will start a print
 
 i=0
-lost=0
+part=2
 #while(p.printing):
 while(p.printing):   
     #Read a frame, ret indicates if the capture was succesful
@@ -84,8 +73,11 @@ while(p.printing):
             # Write the frame into the file 'output.avi'
             out.write(frame)
         except:
-            lost+=1
-            print(lost)
+            out.release()
+            neName=baseName+str(part)
+            part+=1
+            filePath=navFil.createFilePath(neName,'.avi','/media/pi/Yasuo/')
+            out = cv2.VideoWriter(filePath,cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
         # Display the resulting frame    
     if i%1000==0:
         #If you send a lot of instructions you will stop the prining process
